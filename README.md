@@ -1,5 +1,6 @@
 # PI4_IntegracaoDashboards
 Plataforma web com indicadores/dashboards para vendedores monitorarem suas vendas realizadas durante o mês.
+
 ## Minimundo
 A plataforma web visa dar apoio a força de vendas de uma empresa da seguinte forma.
 
