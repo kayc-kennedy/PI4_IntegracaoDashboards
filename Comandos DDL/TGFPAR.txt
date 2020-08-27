@@ -1,0 +1,7 @@
+create table tgfpar(
+    codparc int not null,
+    nomeparc varchar2(100),
+    razaosocial varchar2(100),
+    
+    constraint PK_CODPARC primary key(codparc)
+);

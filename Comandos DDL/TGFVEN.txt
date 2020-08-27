@@ -1,0 +1,6 @@
+CREATE TABLE tgfven(
+    codvend int not null,
+    apelido varchar2(100),
+    
+    constraint PK_codvend primary key(codvend)
+    );

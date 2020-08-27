@@ -1,0 +1,10 @@
+create table tgfpro(
+    codprod int not null,
+    descrprod varchar2(100),
+    fabricante varchar2(100),
+    pesoliq numeric(6, 2),
+    pesobruto numeric(6, 2),
+    
+    constraint PK_CODPROD primary key(codprod)
+    
+);
