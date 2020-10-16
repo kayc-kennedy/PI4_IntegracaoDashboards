@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 
+    // Auntenticação com o Banco de Dados
     async function conexao(){
 
         const connection = await mysql.createConnection({
@@ -11,12 +12,13 @@ const mysql = require('mysql2/promise');
         return connection;
     }
 
+    // Buscar todos os vendedores
     async function get_sellers() {  
         let responseJson = [];
 
         let conn = await conexao();
-
-        const [rows ] = await conn.execute('select a.codvend, a.apelido from tgfven a ')
+      
+        const [rows] = await conn.execute('select a.codvend, a.apelido from tgfven a')
 
             for (let i = 0; i < rows.length; i++) {
                 responseJson.push({
@@ -32,8 +34,24 @@ const mysql = require('mysql2/promise');
                 return responseJson;              
         }
     }
-    
-module.exports = {get_sellers}
+
+    // Login de usuarios 
+    async function get_sellerLogin(usuario){
+        let responseJson = [];
+
+        let conn = await conexao();
+        const [rows] = await conn.execute(`select a.codvend, a.email, a.senha from tgfven a where a.email = '${usuario.email}' and a.senha = '${usuario.senha}'`)
+        
+        for (let i = 0; i < rows.length; i++) {
+            responseJson.push({
+                "email": rows[i].email,
+                "codvend": rows[i].codvend
+            })
+        }
+        return responseJson;
+    }
+
+module.exports = {get_sellers, get_sellerLogin}
 
 
 
