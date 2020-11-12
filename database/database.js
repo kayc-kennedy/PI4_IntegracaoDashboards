@@ -51,7 +51,46 @@ const mysql = require('mysql2/promise');
         return responseJson;
     }
 
-module.exports = {get_sellers, get_sellerLogin}
+    // Buscar Vendas por Fabricante
+    async function manufacturer_sales(dados){
+        let responseJson = [];
+
+        const {dataInicial, dataFinal} = dados;
+
+        let conn = await conexao();
+        const [rows] = await conn.execute(`
+            select pro.fabricante FABRICANTE,
+                SUM(ite.vlrtot) VLRTOTAL,
+                SUM(ite.vlrtotcomdesc) VLRTOTALCOMDESC,
+                SUM(ite.vlrdesctot) VLRTOTALDODESCONTO,
+                COUNT(DISTINCT ite.codprod) MIXDEPRODUTO,
+                COUNT(DISTINCT ite.codparc) MIXDECLIENTE
+            FROM
+                tgfite ite
+                INNER JOIN tgfpro pro ON (ite.codprod = pro.codprod)
+            WHERE
+                ite.dtneg BETWEEN '${dataInicial}' AND '${dataFinal}'
+                -- AND ite.codvend = 3
+            GROUP BY
+                pro.fabricante
+            ORDER BY
+                SUM(ite.vlrtotcomdesc) DESC`)
+
+        for (let i = 0; i < rows.length; i++) {
+            responseJson.push({
+                "fabricante": rows[i].FABRICANTE,
+                "vlrtotal": rows[i].VLRTOTAL,
+                "vlrtotaldodesconto": rows[i].VLRTOTALCOMDESC,
+                "vlrtotaldodesconto": rows[i].VLRTOTALDODESCONTO,
+                "mixdeproduto":rows[i].MIXDEPRODUTO,
+                "mixdecliente":rows[i].MIXDECLIENTE
+            })            
+        }
+        return responseJson;
+    }
+
+
+module.exports = {get_sellers, get_sellerLogin, manufacturer_sales}
 
 
 
