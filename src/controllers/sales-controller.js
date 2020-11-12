@@ -6,7 +6,7 @@ const authConfig = require('../config/auth.json');
 const generateToken = require('./generateToken');
 
 // Vendas por fabricante
-exports.get = async (req, res, next) => {
+exports.get_manufacturer_sales = async (req, res, next) => {
     // const dados = req.body;
     const dataInicial = req.body.datainicial; 
     const dataFinal = req.body.datafinal;
@@ -14,6 +14,51 @@ exports.get = async (req, res, next) => {
     const dados = {dataInicial, dataFinal}
 
     const vendas = await db.manufacturer_sales(dados);
+
+    if(vendas == false){
+        return res.status(404).send({
+            error: 'Error'
+        });    
+    }
+    
+    return res.status(201).send({
+        vendas: vendas
+    });
+}
+
+// Vendas por cliente
+exports.get_clients_sales = async (req, res, next) => {
+
+    const dataInicial = req.body.datainicial; 
+    const dataFinal = req.body.datafinal;
+    const idVend = req.params.id;
+
+    const dados = {dataInicial, dataFinal, idVend}
+
+    const vendas = await db.get_clients_sales(dados);
+
+    if(vendas == false){
+        return res.status(404).send({
+            error: 'Error'
+        });    
+    }
+    
+    return res.status(201).send({
+        vendas: vendas
+    });
+};
+
+
+// Vendas por produto
+exports.get_product_sales = async (req, res, next) => {
+
+    const dataInicial = req.body.datainicial; 
+    const dataFinal = req.body.datafinal;
+    const idVend = req.params.id;
+
+    const dados = {dataInicial, dataFinal, idVend}
+
+    const vendas = await db.get_product_sales(dados);
 
     if(vendas == false){
         return res.status(404).send({

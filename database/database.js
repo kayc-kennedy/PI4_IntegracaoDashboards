@@ -88,9 +88,102 @@ const mysql = require('mysql2/promise');
         }
         return responseJson;
     }
+    
+// Buscar Vendas por cliente
+async function get_clients_sales(dados){
+    let responseJson = [];
+    let sql;
+    const {dataInicial, dataFinal, idVend} = dados;
+
+    if (idVend == undefined){
+        sql = '/*AND ite.codvend =*/'
+    }else{
+        sql = 'AND ite.codvend = ' + idVend;
+    }
 
 
-module.exports = {get_sellers, get_sellerLogin, manufacturer_sales}
+    let conn = await conexao();
+    const [rows] = await conn.execute(`
+            SELECT
+            ite.codparc CODPARC,
+            par.nomeparc NOMEPARC,
+            par.razaosocial RAZAOSOCIAL,
+            SUM(ite.vlrtot) VLRTOTAL,
+            SUM(ite.vlrtotcomdesc) VLRTOTALCOMDESC,
+            SUM(ite.vlrdesctot) VLRTOTALDODESCONTO,
+            COUNT(DISTINCT ite.codprod) MIXDEPRODUTO
+        FROM
+            tgfite ite
+            INNER JOIN tgfpar par ON (ite.codparc = par.codparc)
+        WHERE
+            ite.dtneg BETWEEN '${dataInicial}' AND '${dataFinal}' ${sql}
+        GROUP BY
+            ite.codparc,
+            par.nomeparc,
+            par.razaosocial
+        ORDER BY
+            SUM(ite.vlrtotcomdesc) DESC`)
+
+    for (let i = 0; i < rows.length; i++) {
+        responseJson.push({
+            "codparc": rows[i].CODPARC,
+            "nomeparc": rows[i].NOMEPARC,
+            "razaosocial": rows[i].RAZAOSOCIAL,
+            "vlrtotal": rows[i].VLRTOTAL,
+            "vlrtotcomdesc":rows[i].VLRTOTALCOMDESC,
+            "vlrdesctot":rows[i].VLRTOTALDODESCONTO,
+            "mixdeproduto":rows[i].MIXDEPRODUTO
+        })            
+    }
+    return responseJson;
+}
+
+// Buscar Vendas por cliente
+async function get_product_sales(dados){
+    let responseJson = [];
+    let sql;
+    const {dataInicial, dataFinal, idVend} = dados;
+
+    if (idVend == undefined){
+        sql = ' /*AND ite.codvend =*/'
+    }else{
+        sql = ' AND ite.codvend = ' + idVend;
+    }
+
+    let conn = await conexao();
+    const [rows] = await conn.execute(`
+        SELECT
+            ite.codprod CODPROD,
+            pro.descrprod DESCRPROD,
+            SUM(ite.vlrtot) VLRTOTAL,
+            SUM(ite.vlrtotcomdesc) VLRTOTALCOMDESC,
+            SUM(ite.vlrdesctot) VLRTOTALDODESCONTO,
+            COUNT(DISTINCT ite.codparc) MIXDECLIENTE
+        FROM
+            tgfite ite
+            INNER JOIN tgfpro pro ON (ite.codprod = pro.codprod)
+        WHERE
+            ite.dtneg BETWEEN '${dataInicial}' AND '${dataFinal}' ${sql}
+        GROUP BY
+            ite.codprod,
+            pro.descrprod
+        ORDER BY
+            SUM(ite.vlrtotcomdesc) DESC
+        `)
+
+    for (let i = 0; i < rows.length; i++) {
+        responseJson.push({
+            "codprod": rows[i].CODPROD,
+            "descrprod": rows[i].DESCRPROD,
+            "vlrtot": rows[i].VLRTOTAL,
+            "vlrtotcomdesc": rows[i].VLRTOTALCOMDESC,
+            "vlrdesctot":rows[i].VLRTOTALDODESCONTO,
+            "mixdecliente":rows[i].MIXDECLIENTE
+        })            
+    }
+    return responseJson;
+}
+module.exports = {get_sellers, get_sellerLogin, manufacturer_sales, get_clients_sales, get_product_sales}
 
 
 
