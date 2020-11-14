@@ -5,8 +5,8 @@ const middleware = require('../middleware/auth');
 const controller = require('../controllers/sales-controller');
 
 
-router.get('/', middleware, controller.get_manufacturer_sales);
-router.get('/clients/:id?', middleware, controller.get_clients_sales);
-router.get('/product/:id?', middleware, controller.get_product_sales);
+router.post('/', middleware, controller.manufacturer_sales);
+router.post('/clients/:id?', middleware, controller.clients_sales);
+router.post('/product/:id?', middleware, controller.product_sales);
 
 module.exports = router;

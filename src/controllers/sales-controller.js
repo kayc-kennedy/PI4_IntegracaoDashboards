@@ -6,7 +6,7 @@ const authConfig = require('../config/auth.json');
 const generateToken = require('./generateToken');
 
 // Vendas por fabricante
-exports.get_manufacturer_sales = async (req, res, next) => {
+exports.manufacturer_sales = async (req, res, next) => {
     // const dados = req.body;
     const dataInicial = req.body.datainicial; 
     const dataFinal = req.body.datafinal;
@@ -27,7 +27,7 @@ exports.get_manufacturer_sales = async (req, res, next) => {
 }
 
 // Vendas por cliente
-exports.get_clients_sales = async (req, res, next) => {
+exports.clients_sales = async (req, res, next) => {
 
     const dataInicial = req.body.datainicial; 
     const dataFinal = req.body.datafinal;
@@ -50,7 +50,7 @@ exports.get_clients_sales = async (req, res, next) => {
 
 
 // Vendas por produto
-exports.get_product_sales = async (req, res, next) => {
+exports.product_sales = async (req, res, next) => {
 
     const dataInicial = req.body.datainicial; 
     const dataFinal = req.body.datafinal;
