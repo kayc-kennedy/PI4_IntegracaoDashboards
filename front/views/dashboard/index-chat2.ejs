@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/chartist/chartist.min.css">
+    <link rel="stylesheet" type="text/css" href="/dashboard.css">
+    <title>Vendas por Fabricante | Integração Dashboards</title>
+    <style>
+        .alert {
+            position: absolute;
+            right: 0;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Integração Dashboards</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
+            data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="/logout">Sair</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/dashboard/"> Vendas por fabricante<span
+                                    class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard/vendas-clientes">
+                                Vendas por cliente
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard/vendas-produtos">
+                                <span data-feather="shopping-cart"></span>
+                                Vendas por produto
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <div class="col-md-12">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Gráfico</h1>
+                        <form id="form-buscarAPI" method="POST" action="/dashboard/vendas-fabricantes">
+                            <div class="form-row">
+                                <div class="col">
+                                    <input type="date" class="form-control" id="datainicial" name="datainicial"
+                                        placeholder="Data inicial">
+                                </div>
+                                <div class="col">
+                                    <input type="date" class="form-control" id="datafinal" name="datafinal"
+                                        placeholder="Data final">
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary btn-block"
+                                        id="btn-buscarAPI">Buscar</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <div class="alert alert-danger alert-dismissible fade hide" role="alert" id="alert-CamposVazios">
+                        <b>Atenção</b> não deixe campos vazios.
+                    </div>
+
+                    <!-- <canvas id="myChart" width="200" height="100"></canvas> -->
+
+                    <div class="ct-chart ct-perfect-fourth"></div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+<script src="/jquery/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- <script src="/chart/Chart.bundle.min.js"></script> -->
+<script src="/chartist/chartist.min.js"></script>
+<script src="/axios/axios.min.js"></script>
+
+<script>
+    const formSubmit = document.getElementById('form-buscarAPI')
+    formSubmit.addEventListener('submit', buscarAPI)
+
+    async function buscarAPI(event) {
+        event.preventDefault()
+        let datainicial, dataFinal
+        datainicial = document.getElementById('datainicial').value
+        datafinal = document.getElementById('datafinal').value
+
+        // if (datainicial == '' || datafinal == '') {
+        //     document.getElementById('alert-CamposVazios').classList.remove('hide')
+        //     document.getElementById('alert-CamposVazios').classList.add('show')
+        //     setTimeout(() => {
+        //         document.getElementById('alert-CamposVazios').classList.remove('show')
+        //         document.getElementById('alert-CamposVazios').classList.add('hide')
+        //     }, 5000)
+        //     return false
+        // }
+
+        const body = { datainicial: "2020-05-01", datafinal: "2020-06-30", };
+        // const body = { datainicial, datafinal };
+        try {
+            let response = await axios.post('/dashboard/vendas-fabricantes', body)
+            iniciarChart(response.data)
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    function iniciarChart(data) {
+        let labels = [], ds = [], series = []
+        data.vendas.forEach(item => {
+            labels.push(item.fabricante)
+            series.push(item.vlrtotal)
+            // ds.push({
+            //     "label": [item.fabricante],
+            //     "data": [item.vlrtotal],
+            //     "backgroundColor": getRandomColor(),
+            //     "borderWidth": 1
+            // })
+        })
+
+        // var config = {
+        //     type: 'bar',
+        //     data: {
+        //         labels: ['Fabricantes'],
+        //         datasets: ds
+        //     }
+        // }
+        new Chartist.Bar('.ct-chart', {
+            labels: labels,
+            series: series
+        }, {
+            distributeSeries: true
+        });
+
+    }
+
+
+
+
+</script>
+
+</html>

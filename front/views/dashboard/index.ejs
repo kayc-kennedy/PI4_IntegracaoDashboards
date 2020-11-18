@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/chartist/chartist.min.css">
+    <link rel="stylesheet" type="text/css" href="/dashboard.css">
+    <title>Vendas por Fabricante | Integração Dashboards</title>
+    <style>
+        .alert {
+            position: absolute;
+            right: 0;
+            z-index: 9999;
+        }
+
+        .chart {
+            position: relative;
+            width: 100%;
+            max-height: 500px;
+            height: 100vh;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Integração Dashboards</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
+            data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="/logout">Sair</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/dashboard/"> Vendas por fabricante<span
+                                    class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard/vendas-clientes">
+                                Vendas por cliente
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard/vendas-produtos">
+                                <span data-feather="shopping-cart"></span>
+                                Vendas por produto
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <div class="col-md-12">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Gráfico</h1>
+
+                        <form id="form-buscarAPI" method="POST" action="/dashboard/vendas-fabricantes">
+                            <div class="form-row">
+                                <div class="col">
+                                    <input type="date" class="form-control" id="datainicial" name="datainicial"
+                                        placeholder="Data inicial">
+                                </div>
+                                <div class="col">
+                                    <input type="date" class="form-control" id="datafinal" name="datafinal"
+                                        placeholder="Data final">
+                                </div>
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary btn-block d-block"
+                                        id="btn-buscarAPI">Buscar</button>
+                                    <button class="btn btn-primary btn-block d-none" type="button" disabled
+                                        id="btn-loading" style=" margin-top: 0px; ">
+                                        <span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>
+                                        Carregando...
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 pb-2">
+                            <div class="btn-group" role="group" id="btn-group">
+
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="chart">
+                                <div class="ct-chart ct-golden-section"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade hide" role="alert" id="alert-custom"> </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+<script src="/jquery/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/chartist/chartist.min.js"></script>
+<script src="/axios/axios.min.js"></script>
+
+<script>
+    const formSubmit = document.getElementById('form-buscarAPI')
+    formSubmit.addEventListener('submit', buscarAPI)
+    var charGlobal, chunckedGlobal;
+
+    async function buscarAPI(event) {
+        event.preventDefault()
+        let datainicial, dataFinal
+        datainicial = document.getElementById('datainicial').value
+        datafinal = document.getElementById('datafinal').value
+
+        if (datainicial == '' || datafinal == '') {
+            hideAndShowDangerAlert('Campo(s) Data vazio(s)')
+            return false
+        }
+
+        // const body = { datainicial: "2020-05-01", datafinal: "2020-06-30", };
+        const body = { datainicial, datafinal };
+        document.getElementById('btn-buscarAPI').classList.remove('d-block')
+        document.getElementById('btn-buscarAPI').classList.add('d-none')
+        document.getElementById('btn-loading').classList.remove('d-none')
+        document.getElementById('btn-loading').classList.add('d-block')
+        try {
+            let response = await axios.post('/dashboard/vendas-fabricantes', body)
+            iniciarChart(response.data)
+        } catch (e) {
+            hideAndShowDangerAlert('Nenhuma informação foi encontrada')
+            console.error(e)
+        }
+        finally {
+            document.getElementById('btn-buscarAPI').classList.remove('d-none')
+            document.getElementById('btn-buscarAPI').classList.add('d-block')
+            document.getElementById('btn-loading').classList.remove('d-block')
+            document.getElementById('btn-loading').classList.add('d-none')
+        }
+    }
+
+    function iniciarChart(data) {
+        chunckedGlobal = chunk(data.data.vendas, 5)
+        criarBtn(5)
+
+        let labels = [], ds = [], series = []
+
+        chunckedGlobal[0].forEach(item => {
+            labels.push(item.fabricante)
+            series.push(item.vlrtotal)
+        })
+        charGlobal = new Chartist.Bar('.ct-chart', {
+            labels: labels,
+            series: series
+        }, {
+            distributeSeries: true,
+            low: 0,
+            scaleMinSpace: 20,
+            onlyInteger: true
+        });
+    }
+
+    function hideAndShowDangerAlert(msg) {
+        let alert = document.getElementById('alert-custom')
+        alert.innerHTML = ''
+        alert.innerHTML = `<b>Atenção, </b> ${msg}`
+        alert.classList.remove('hide')
+        alert.classList.add('show')
+        setTimeout(() => {
+            alert.classList.remove('show')
+            alert.classList.add('hide')
+        }, 5000)
+    }
+
+    function chunk(array, size) {
+        const chunked_arr = [];
+        let index = 0;
+        while (index < array.length) {
+            chunked_arr.push(array.slice(index, size + index));
+            index += size;
+        }
+        return chunked_arr;
+    }
+
+    function criarBtn(size) {
+        for (var i = 0; i < size - 1; i++) {
+            var btn = document.createElement('BUTTON')
+            btn.innerHTML = `Página ${i + 1}`
+            btn.setAttribute("id", `btn-pagina-${i}`)
+            btn.setAttribute("data-pagina", i)
+            btn.setAttribute("class", "btn btn-outline-secondary")
+            btn.setAttribute("onclick", "atualizarChart(this)")
+            document.getElementById('btn-group').appendChild(btn)
+        }
+    }
+
+    function atualizarChart(componente) {
+        var pagina = componente.getAttribute("data-pagina")
+        var labels = [], series = []
+        chunckedGlobal[pagina].forEach(item => {
+            labels.push(item.fabricante)
+            series.push(item.vlrtotal)
+        })
+        let data = { labels, series }
+        charGlobal.update(data, {
+            distributeSeries: true
+        })
+    }
+
+
+
+</script>
+
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/form-login.css">
+    <title>Login | Integração Dashboards</title>
+</head>
+
+<body class="text-center">
+    <form class="form-signin" id="form-login" method="POST" action="/login">
+        <h1 class=" h3 mb-3 font-weight-normal">Entrar</h1>
+        <!-- required autofocus -->
+        <input type="email" id="email" name="email" class="form-control" placeholder="E-mail">
+        <input type="password" id="senha" name="senha" class="form-control" placeholder="Senha">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+        <% if(locals.error) { %>
+        <div class="alert alert-danger mt-3" role="alert">
+           Usuário ou senha incorreta
+        </div>
+        <% } %>
+    </form>
+</body>
+
+</html>
