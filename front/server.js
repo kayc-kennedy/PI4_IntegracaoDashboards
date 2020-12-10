@@ -20,7 +20,8 @@ app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'))
 app.use('/chart', express.static(__dirname + '/node_modules/chart.js/dist/'))
 app.use('/chartist', express.static(__dirname + '/node_modules/chartist/dist/'))
 app.use('/axios', express.static(__dirname + '/node_modules/axios/dist/'))
-app.use('/popper', express.static(__dirname + '/node_modules/popper.js/dist/'))
+app.use('/icons', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free/css/'))
+app.use('/webfonts', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free/webfonts/'))
 
 // Rotas
 app.use('/', login_routes)

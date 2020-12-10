@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/chartist/chartist.min.css">
+    <link rel="stylesheet" type="text/css" href="/icons/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/dashboard.css">
+    <title>Vendas por Fabricante | Integração Dashboards</title>
+    <style>
+        .alert {
+            position: absolute;
+            right: 0;
+            z-index: 9999;
+        }
+
+        .chart {
+            position: relative;
+            width: 100%;
+            max-height: 500px;
+            height: 100vh;
+            display: block;
+        }
+
+        .cor-1 {
+            color: #d70206;
+            /* background-color: #d70206; */
+        }
+
+        .cor-2 {
+            color: #f05b4f;
+            /* background-color: #f05b4f; */
+        }
+
+        .cor-3 {
+            color: #f4c63d;
+            /* background-color: #f4c63d; */
+        }
+
+        .cor-4 {
+            color: #d17905;
+            /* background-color: #d17905; */
+        }
+
+        .cor-5 {
+            color: #453d3f;
+            /* background-color: #453d3f; */
+        }
+
+        .cor-6 {
+            color: #59922b;
+            /* background-color: #59922b; */
+        }
+
+        .cor-7 {
+            color: #0544d3;
+            /* background-color: #0544d3; */
+        }
+
+        .cor-8 {
+            color: #d70206;
+            /* background-color: #d70206; */
+        }
+
+        .cor-9 {
+            color: #d70206;
+            /* background-color: #d70206; */
+        }
+
+        .cor-10 {
+            color: #d70206;
+            /* background-color: #d70206; */
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+        <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/">Integração Dashboards</a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
+            data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="/logout">Sair</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-md-12">
+                <div class="col-md-12">
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-2 mb-2">
+                        <h1 class="h2">Dashboard</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-white bg-primary">
+                                <div class="card-body">
+                                    <h1 class="card-title" id="qtdProdutosVendidos"></h1>
+                                    <p class="card-text">Total produtos vendidos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-white bg-success">
+                                <div class="card-body">
+                                    <div class="col-xs-8">
+                                        <h1 class="card-title" id="qtdFabricantes"></h1>
+                                        <p class="card-text">Total fabricantes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-white bg-warning">
+                                <div class="card-body">
+                                    <h1 class="card-title" id="qtdMixClientes"></h1>
+                                    <p class="card-text">Total mix clientes</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mix de clientes - 5</h5>
+                                    <div class="col-md-12">
+                                        <div class="ct-chart" id="chart-round"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-10 col-md-offset-1" id="mixClientes">
+                                           <h6>Legenda</h6>
+                                            <!-- <i class="fas fa-circle text-info"></i> Open
+                                            <i class="fas fa-circle text-danger"></i> Bounce
+                                            <i class="fas fa-circle text-warning"></i> Unsubscribe -->
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="card-footer bg-white">
+                                    <small class="text-muted">Última atualização: </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Vendas fabricantes - 7</h5>
+                                    <div class="col-md-12">
+                                        <div class="ct-chart" id="chart-fabricante"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-10 col-md-offset-1" id="vendasFabricantes">
+                                            <!-- <h6>Legenda</h6> -->
+                                            <!-- <i class="fas fa-circle ct-series ct-series-a"></i> Open
+                                            <i class="fas fa-circle text-danger"></i> Bounce
+                                            <i class="fas fa-circle text-warning"></i> Unsubscribe -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white">
+                                    <small class="text-muted">Última atualização: </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Vendas Produtos - 7</h5>
+                                    <div class="col-md-12">
+                                        <div class="ct-chart" id="chart-produto"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-10 col-md-offset-1" id="vendasProdutos">
+                                            <!-- <h6>Legenda</h6> -->
+                                            <!-- <i class="fas fa-circle ct-series ct-series-a"></i> Open
+                                            <i class="fas fa-circle text-danger"></i> Bounce
+                                            <i class="fas fa-circle text-warning"></i> Unsubscribe -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white">
+                                    <small class="text-muted">Última atualização: </small>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="alert alert-danger alert-dismissible fade hide" role="alert" id="alert-custom">
+                </div>
+        </div>
+        </main>
+    </div>
+    </div>
+</body>
+<script src="/jquery/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/chartist/chartist.min.js"></script>
+<script src="/axios/axios.min.js"></script>
+
+
+<script>
+    window.onload = function () {
+        async function chartVendasFabricantes() {
+            const body = { datainicial: "2020-01-01", datafinal: "2020-12-31", top: 7 };
+            try {
+                let response = await axios.post('/dashboard/vendas-fabricantes-top', body)
+                iniciarChart(response.data.data)
+            } catch (e) {
+                console.error(e)
+            }
+            async function iniciarChart(info) {
+                let labels = [], series = []
+                info.forEach(item => {
+                    labels.push(item.fabricante)
+                    series.push(item.vlrtotal)
+                })
+
+                var data = {
+                    labels: labels,
+                    series: series
+                };
+
+                var options = {
+                    distributeSeries: true,
+                    showArea: true,
+                    height: "400px",
+                }
+
+                var chatBart = new Chartist.Bar('#chart-fabricante', data, options)
+                // new Chartist.Bar('#chart-fabricante', data, options);
+            }
+        }
+
+        async function chartMixClientes() {
+            const body = { datainicial: "2020-01-01", datafinal: "2020-12-31", top: 5 };
+            try {
+                let response = await axios.post('/dashboard/vendas-fabricantes-top', body)
+                iniciarChart(response.data.data)
+            } catch (e) {
+                console.error(e)
+            }
+            async function iniciarChart(info) {
+                series = []
+                info.forEach((item, index) => {
+                    series.push(item.mixdecliente)
+                    document.getElementById('mixClientes').innerHTML += `<i class="fas fa-circle cor-${index}"></i> ${item.fabricante} <br>`
+                    console.log(`cor-${index}`)
+                })
+
+                var data = {
+                    series: series
+                };
+
+                var sum = function (a, b) { return a + b };
+                var options = {
+                    labelInterpolationFnc: function (value) {
+                        return Math.round(value / data.series.reduce(sum) * 100) + '%';
+                    },
+                    height: "300px",
+                }
+
+                var chatPie = new Chartist.Pie('#chart-round', data, options)
+                // new Chartist.Bar('#chart-fabricante', data, options);
+            }
+        }
+
+        async function chartVendasProdutos() {
+            const body = { datainicial: "2020-01-01", datafinal: "2020-12-31", top: 7, codigocliente: 1 };
+            try {
+                let response = await axios.post('/dashboard/vendas-produtos-top', body)
+                iniciarChart(response.data.data)
+            } catch (e) {
+                console.error(e)
+            }
+            async function iniciarChart(info) {
+                console.log(info)
+                let labels = [], series = []
+                info.forEach((item, index) => {
+                    labels.push(item.descrprod)
+                    series.push(item.vlrtot)
+                   
+                    // document.getElementById('vendasProdutos').innerHTML += `<i class="fas fa-circle cor-${index}"></i> ${item.fabricante} <br>`
+                })
+
+                var data = {
+                    labels: labels,
+                    series: series
+                };
+                console.log(data)
+
+                var options = {
+                    seriesBarDistance: 10,
+                    distributeSeries: true,
+                    showArea: true,
+                    horizontalBars: true,
+                    axisY: {
+                        offset: 80
+                    },
+                    height: "400px",
+                }
+                var chatBart = new Chartist.Bar('#chart-produto', data, options)
+                // new Chartist.Bar('#chart-fabricante', data, options);
+            }
+        }
+
+        async function totalVendaProdutos() {
+            const body = { datainicial: "2020-01-01", datafinal: "2020-12-31", codigocliente: 1 };
+            try {
+                let response = await axios.post('/dashboard/vendas-produtos-sum', body)
+                iniciarChart(response.data.data)
+            } catch (e) {
+                console.error(e)
+            }
+            async function iniciarChart(info) {
+                document.getElementById('qtdProdutosVendidos').innerHTML = `${info.qtdVendas}`
+                document.getElementById('qtdFabricantes').innerHTML = `${info.qtdFabricantes}`
+                document.getElementById('qtdMixClientes').innerHTML = `${info.qtdMixClientes}`
+            }
+        }
+
+        chartVendasFabricantes();
+        chartMixClientes();
+        chartVendasProdutos()
+        totalVendaProdutos()
+
+
+        // Data
+        var d = new Date()
+        var todosTimeFields = document.querySelectorAll('.text-muted')
+        todosTimeFields.forEach((field) => {
+            field.innerHTML = d
+        })
+    }
+
+</script>
+
+</html>

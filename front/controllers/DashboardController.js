@@ -1,4 +1,5 @@
 const data = require('../data/index')
+const DashboardRepository = require('../repository/DashboardRepostory')
 
 module.exports = {
 
@@ -23,4 +24,36 @@ module.exports = {
         return res.status(response.code).send({ error: response.error, data: response.data })
     },
 
+    // Novas rotas - dashboard
+    vendas_fabricante_top: async function (req, res) {
+        let { jwt } = req.cookies
+        // const { datainicial, datafinal, jwt, top } = req.body
+        const { datainicial, datafinal, top } = req.body
+        const response = await DashboardRepository.vendas_fabricante_top({ datainicial, datafinal }, { jwt, top })
+        return res.status(response.code).send({ error: response.error, data: response.data })
+    },
+
+    fabricantes_mix_clientes: async function (req, res) {
+        let { jwt } = req.cookies
+        // const { datainicial, datafinal, jwt, top } = req.body
+        const { datainicial, datafinal, top } = req.body
+        const response = await DashboardRepository.fabricantes_mix_clientes({ datainicial, datafinal }, { jwt, top })
+        return res.status(response.code).send({ error: response.error, data: response.data })
+    },
+
+    vendas_produtos_top: async function (req, res) {
+        let { jwt } = req.cookies
+        // const { datainicial, datafinal, jwt, top } = req.body
+        const { datainicial, datafinal, top, codigoproduto } = req.body
+        const response = await DashboardRepository.vendas_produtos_top({ datainicial, datafinal }, { jwt, top }, { codigoproduto })
+        return res.status(response.code).send({ error: response.error, data: response.data })
+    },
+
+    vendas_produtos_sum: async function (req, res) {
+        let { jwt } = req.cookies
+        // const { datainicial, datafinal, jwt, top } = req.body
+        const { datainicial, datafinal, top, codigoproduto } = req.body
+        const response = await DashboardRepository.vendas_produtos_quantidade({ datainicial, datafinal }, { jwt, top }, { codigoproduto })
+        return res.status(response.code).send({ error: response.error, data: response.data })
+    },
 }
